@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href= "/public/assets/style.css" rel="stylesheet" type="text/css" />
+    <title>Review</title>
+    
+</head>
+
+<body>
+    <h1>Search for Movie</h1>
+    <form method="post" action="/review">
+        <fieldset>
+            <strong>Type the movie name here: </strong><input type="text" name="movieName" id="movieName">
+            
+        </fieldset>
+        <br>
+        
+        <input type="button" onclick="grab()" value="Search">
+        <p id="result"></p>
+        <hr>
+    </form>
+    <a href="/">HOME</a>
+</body>
+<script type="text/javascript">
+   async function grab (){
+    let resultP = document.getElementById("result")
+    const input = document.getElementById('movieName').value
+    const url = 'https://moviesminidatabase.p.rapidapi.com/movie/imdb_id/byTitle/'+input+'/';
+    const options = {
+    method: 'GET',
+    headers: {
+    'X-RapidAPI-Key': '84791d65b3mshe87b23060ec698ep1aa8bbjsnea1b39765334',
+    'X-RapidAPI-Host': 'moviesminidatabase.p.rapidapi.com'
+  }
+};
+
+try {
+    
+	const response = await fetch(url, options);
+	const result = await response.text();
+    resultj = JSON.parse(result)
+    
+    if (resultj.hasOwnProperty("results")) {
+        if (resultj.results.length > 0  && resultj.results.length < 30){
+            list ='<form method="post" action="/review"><label for="results">Results</br></label><select name="results" id="results" size="4">'
+            resultj.results.forEach(element => {
+                list+="<option value="+"'"+element.title+"'"+">"+element.title+"</option>"
+            })
+            list+= '</select><input type="submit" value="Submit" /></form>'
+
+                resultP.style.fontWeight = "bold"
+                resultP.style.color="black"
+                resultP.innerHTML=list
+
+        }
+
+        
+
+        else if (resultj.results.length > 30 ){
+            resultP.style.fontWeight = "bold"
+            resultP.style.color="red"
+            resultP.innerHTML="Too many matches. Please refine search."
+        
+    }
+        
+        else if (resultj.results.length == 0) {
+            resultP.style.fontWeight = "bold"
+            resultP.style.color="red"
+            resultP.innerHTML="No matches found"
+            }
+            
+        }   
+
+
+        else{
+            resultP.style.fontWeight = "bold"
+            resultP.style.color="red"
+            resultP.innerHTML="Please enter movie name"
+}
+    
+
+} catch (error) {
+	console.error(error);
+}}
+</script>
+</html>
